@@ -1,14 +1,49 @@
-from flask import Flask, render_template_string
-app = Flask(__name__)
-HTML = """
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Dmail Python</title><script src="https://cdn.tailwindcss.com"></script><style>body{font-family:sans-serif;background:#eef2ff}.page{display:none}.page.active{display:block}</style></head>
-<body>
-<div class="flex"><aside class="w-[270px] bg-white min-h-screen p-4 fixed left-0 top-0 border-r"><div class="flex items-center gap-3 px-2 py-3"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#7c3aed] to-[#a78bfa] flex items-center justify-center text-white font-black">D</div><div><div class="font-bold text-[#4c1d95]">dmail</div><div class="text-[11px] text-gray-400">Python</div></div></div>
-<nav class="mt-6 space-y-1 text-sm"><button onclick="showPage('beranda')" id="btn-beranda" class="w-full text-left px-4 py-2.5 rounded-xl bg-[#f5f3ff] font-bold text-[#4c1d95]">Beranda</button><button onclick="showPage('riwayat')" id="btn-riwayat" class="w-full text-left px-4 py-2.5 rounded-xl text-gray-500">Riwayat</button><button onclick="showPage('saldo')" id="btn-saldo" class="w-full text-left px-4 py-2.5 rounded-xl text-gray-500">Saldo</button><button onclick="showPage('profil')" id="btn-profil" class="w-full text-left px-4 py-2.5 rounded-xl text-gray-500">Profil</button></nav></aside>
-<main class="ml-[270px] flex-1 p-6"><div id="beranda" class="page active"><div class="bg-white rounded-2xl p-4 flex justify-between"><h1 class="font-bold">Selamat malam, datpol</h1><span class="px-3 py-1 bg-[#f5f3ff] text-xs rounded-full text-[#4c1d95]">Python Online</span></div><div class="mt-4 bg-gradient-to-br from-[#7c3aed] to-[#4c1d95] rounded-[28px] p-6 text-white"><p class="text-xs">SALDO ANDA</p><h2 class="text-4xl font-bold mt-2">Rp0</h2></div></div><div id="riwayat" class="page"><div class="bg-white rounded-2xl p-6"><h2 class="font-bold">Riwayat</h2></div></div><div id="saldo" class="page"><div class="bg-white rounded-2xl p-6"><h2 class="font-bold">Saldo Rp0</h2></div></div><div id="profil" class="page"><div class="bg-white rounded-2xl p-6"><h2 class="font-bold">Profil datpol</h2></div></div></main></div>
-<script>function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.className='w-full text-left px-4 py-2.5 rounded-xl text-gray-500');document.getElementById('btn-'+id).className='w-full text-left px-4 py-2.5 rounded-xl bg-[#f5f3ff] font-bold text-[#4c1d95]';}</script>
-</body></html>
-"""
-@app.route("/")
-def home(): return render_template_string(HTML)
-if __name__=="__main__": app.run()
+from flask import Flask,render_template_string as R,request as Q,redirect as D,session as S
+from datetime import datetime as T
+a=Flask(__name__);a.secret_key="zhen-v2"
+u={"datpol":{"p":"123456","s":0,"e":"datpol@gmail.com","r":"admin","j":0}};e={"t":0,"h":[]};K=0.20
+B="""<!DOCTYPE html><html><head><meta charset=UTF-8><meta name=viewport content=\"width=device-width,initial-scale=1.0\"><title>zhen</title><script src=https://cdn.tailwindcss.com></script><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css></head><body class=\"flex min-h-screen\" style=background:#f0f7ff><div class=\"w-64 bg-white p-4 fixed h-full\"><b>zhen-email</b><div class=mt-8><a href=/beranda class=\"block p-2\">Beranda</a><a href=/jual class=\"block p-2\">Jual Email</a><a href=/saldo class=\"block p-2\">Saldo</a><a href=/admin class=\"block p-2 bg-yellow-50\">Admin Cuan</a></div></div><div class=\"flex-1 ml-64 p-6\"><div class=flex><h2>Halo, {{ u }}</h2><span class=\"ml-auto bg-white px-4 py-1 rounded-full\">Rp{{ s }}</span><a href=/logout class=\"ml-4 text-red-500\">Keluar</a></div>{{ c|safe }}</div></body></html>"""
+def P(t,c):
+ if 'u' not in S:return D('/login')
+ x=S['u'];d=u.get(x,{"s":0,"r":"user"});return R(B,u=x,s=d['s'],c=c)
+@a.route('/')
+def i():
+ if 'u' not in S:return D('/login')
+ return D('/beranda')
+@a.route('/login',methods=['GET','POST'])
+def l():
+ if Q.method=='POST':
+  x=Q.form['username'].strip();p=Q.form['password'].strip()
+  if x in u and u[x]['p']==p:S['u']=x;return D('/beranda')
+  return '<script>alert("Salah!");location="/login"</script>'
+ return '<div style=display:flex;justify-content:center;align-items:center;height:100vh;background:#f0f7ff><form method=POST style=background:white;padding:40px;border-radius:24px;width:380px><h2>zhen-email Login</h2><input name=username placeholder=Username required style=width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;margin:12px 0><input name=password type=password placeholder=Password required style=width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;margin-bottom:20px><button style=width:100%;padding:12px;background:#2563eb;color:white;border-radius:12px> Masuk </button><p style=text-align:center;margin-top:16px><a href=/register style=color:#2563eb>Daftar Custom</a></p><p style=text-align:center;font-size:11px;color:#aaa>admin: datpol / 123456</p></form></div>'
+@a.route('/register',methods=['GET','POST'])
+def r():
+ if Q.method=='POST':
+  x=Q.form['username'].strip();p=Q.form['password'].strip();m=Q.form['email'].strip()
+  if x in u:return '<script>alert("Dipake");location="/register"</script>'
+  u[x]={"p":p,"s":0,"e":m,"r":"user","j":0};S['u']=x;return D('/beranda')
+ return '<div style=display:flex;justify-content:center;align-items:center;height:100vh;background:#f0f7ff><form method=POST style=background:white;padding:40px;border-radius:24px;width:380px><h2>Daftar Akun Baru</h2><input name=username placeholder="Username bebas" required style=width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;margin:12px 0><input name=email placeholder=Email required style=width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;margin-bottom:12px><input name=password type=password placeholder=Password required style=width:100%;padding:12px;border:1px solid #ddd;border-radius:12px;margin-bottom:20px><button style=width:100%;padding:12px;background:#2563eb;color:white;border-radius:12px>Daftar</button></form></div>'
+@a.route('/beranda')
+def b():
+ if 'u' not in S:return D('/login')
+ d=u[S['u']];c=f'<div class=bg-blue-600 style=background:linear-gradient(135deg,#3b82f6,#1d4ed8);padding:24px;border-radius:24px;color:white><p>TOTAL SALDO</p><h1 style=font-size:32px;font-weight:bold>Rp{d["s"]}</h1><div style=margin-top:16px><a href=/saldo style=background:white;color:#2563eb;padding:8px 20px;border-radius:999px>Tarik</a><a href=/jual style=background:rgba(255,255,255,0.2);color:white;padding:8px 20px;border-radius:999px;margin-left:8px>Jual Email</a></div></div><div class="bg-white rounded-2xl p-5 mt-6"><h3>Cuan Admin: Rp{e["t"]}</h3><p style=font-size:12px;color:#888>Setiap jual email Rp1000, kamu dapet Rp{int(1000*K)} (20%)</p></div>'
+ return P("Beranda",c)
+@a.route('/jual',methods=['GET','POST'])
+def j():
+ if 'u' not in S:return D('/login')
+ if Q.method=='POST':
+  h=int(Q.form.get('harga',1000));m=[x for x in Q.form.get('list_email','').split('\n') if x.strip()!=''];n=len(m) if m else 1;x=S['u'];t=h*n;ca=int(t*K);cu=t-ca;u[x]['s']+=cu;u[x]['j']+=n;e['t']+=ca;e['h'].append({"u":x,"n":n,"c":ca,"w":T.now().strftime("%d/%m %H:%M")});return f'<script>alert("Berhasil {n} email! Kamu Rp{cu} Admin Rp{ca}");location="/beranda"</script>'
+ c='<div class="bg-white rounded-2xl p-6"><h3>Jual Email</h3><form method=POST><textarea name=list_email required placeholder="budi@gmail.com|pass" style=width:100%;height:160px;border:1px solid #ddd;border-radius:12px;padding:12px;margin-top:12px></textarea><input type=number name=harga value=1000 style=width:100%;padding:12px;border:1px solid #ddd;border-radius:999px;margin-top:12px><button style=width:100%;padding:12px;background:#2563eb;color:white;border-radius:999px;margin-top:12px>Jual & Cuan</button></form></div>'
+ return P("Jual",c)
+@a.route('/saldo')
+def s():
+ if 'u' not in S:return D('/login')
+ return P("Saldo",'<div class="bg-white rounded-2xl p-6 max-w-md"><h3>Tarik ke DANA</h3><button onclick=alert("Dikirim!") style=width:100%;padding:12px;background:#2563eb;color:white;border-radius:999px;margin-top:12px>Ajukan</button></div>')
+@a.route('/admin')
+def ad():
+ if 'u' not in S:return D('/login')
+ if u[S['u']]['r']!='admin':return "Bukan admin! Login datpol / 123456"
+ h="".join([f"<tr><td>{x['w']}</td><td>{x['u']}</td><td>{x['n']}</td><td>+Rp{x['c']}</td></tr>" for x in e['h']]);return P("Admin",f'<div class="bg-white rounded-2xl p-6"><h3>Admin Cuan: Rp{e["t"]}</h3><table>{h}</table></div>')
+@a.route('/logout')
+def o():S.pop('u',None);return D('/login')
